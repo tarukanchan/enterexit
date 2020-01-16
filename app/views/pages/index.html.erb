@@ -1,0 +1,28 @@
+<h1>Welcome!</h1>
+
+<% if current_user %>
+
+<% prev_tag = current_user.events&.sort_by(&:created_at)&.last&.tag %>
+<% prev_time = current_user.events&.sort_by(&:created_at)&.last&.created_at %>
+<%= "You #{prev_tag}ed at #{prev_time}" if prev_tag && prev_time %>
+
+<% if prev_tag == nil || prev_tag == "exit" %>
+<%= button_to "Clock In", events_path(:tag => "enter"), method: :post, class: "button" %>
+<% elsif prev_tag == nil || prev_tag == "enter" %>
+<%= button_to "Clock Out", events_path(:tag => "exit"), method: :post, class: "button" %>
+<% end %>
+
+<ul>
+	<% current_user.events.sort_by(&:created_at).reverse.each do |e| %>
+		<li class="list"><%= "#{e.tag} ==> #{e.created_at}" %></li>
+	<% end %>
+</ul>
+<%= button_to 'Sign out', destroy_user_session_path, method: :delete %>
+
+<% else %>
+
+<h2>Please Sign in or Sign up to continue.</h2>
+<%= link_to 'Sign up', new_user_registration_path, class: "button" %>
+<%= link_to 'Sign in', new_user_session_path, class: "button" %>
+
+<% end %>
